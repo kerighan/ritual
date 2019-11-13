@@ -1,6 +1,9 @@
 import networkx as nx
 
 
+__version__ = "0.0.1"
+
+
 class Rite:
     from .box import standard
 
