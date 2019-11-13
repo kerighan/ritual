@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>rituΛl</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet"> 
+    <meta charset="UTF-8">
+</head>
+<body>
+    <nav class="shadow">
+        <div class="left-buttons"><div class="logo">rituΛl</div></div>
+        <div class="right-buttons">
+            <select id="save-list"></select><button class="btn-secondary" id="save-button">Save</button><button class="btn-primary" id="run-button">Run</button>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="left-panel shadow">
+            <div class="box-info">
+                <h2 id="box-info-gist"></h2>
+                <div id="box-info-name"></div>
+                <div id="box-info-value"></div>
+                <div id="box-info-parameters"></div>
+                <div id="box-help"></div>
+            </div>
+        </div>
+        <div class="svg-container">
+            <div id="blueprint-info">Right-click to add an item</div>
+            <svg id="blueprint"></svg>
+        </div>
+    </div>
+    <div class="helper d-none border shadow-sm" id="helper">
+        <div class="helper-search">
+            <label>All boxes available</label>
+            <input placeholder="Search" autocomplete="off" id="helper-search-input" />
+        </div>
+        <ul id="helper-list">
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
+    <script src="https://d3js.org/d3-selection.v1.min.js"></script>
+    <script src="https://d3js.org/d3-drag.v1.min.js"></script>
+    <script src="js/boxes.js"></script>
+    <script src="js/blueprint.js"></script>
+</body>
+</html>

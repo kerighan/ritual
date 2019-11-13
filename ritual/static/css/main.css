@@ -1,0 +1,262 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #262626;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.d-none {
+    display: none;
+}
+
+nav {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background-color: #3e3e3e;
+    z-index: 2;
+}
+
+.left-panel {
+    position: absolute;
+    width: 300px;
+    height: calc(100vh - 50px);
+    background-color: #606060;
+    z-index: 1;
+}
+
+.container {
+    position: relative;
+    width: 100%;
+}
+
+.border {
+    border: solid rgba(0,0,0,.2) 2px;
+}
+
+#blueprint {
+    width: calc(100%);
+    height: calc(100vh - 50px);
+}
+
+.svg-container {
+    position: absolute;
+    left: 300px;
+    width: 100%;
+}
+
+.helper {
+    position: absolute;
+    background-color: #111111;
+    width: 400px;
+    height: 400px;
+    border-radius: 5px;
+    opacity: .9;
+
+    color: #fff;
+    font-size: 15px;
+}
+
+.helper-search {
+    position: relative;
+    width: 100%;
+}
+
+.helper-search label {
+    position: relative;
+    display: block;
+    padding: 10px;
+}
+
+.helper-search input {
+    width: 100%;
+    display: block;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, .8);
+    border: none;
+}
+
+.helper ul {
+    position: relative;
+    list-style: none;
+    padding: 0;
+    height: 310px;
+    overflow: auto;
+}
+
+.helper li {
+    display: block;
+    position: relative;
+    padding: 4px;
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+.helper li:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.shadow-sm {
+	box-shadow: 0 .125rem .25rem rgba(0,0,0,.075) !important;
+}
+
+.shadow {
+	box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
+}
+
+.draggable {
+    cursor: move;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.unclickable {
+    pointer-events: none;
+}
+
+.box-info {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.box-info h2 {
+    font-size: 16px;
+    margin: 0;
+    padding: 15px;
+}
+
+.box-info div {
+    padding-left: 15px;
+}
+
+.box-info label {
+    color: rgba(255, 255, 255, .6);
+    font-size: 12px;
+    margin-bottom: 5px;
+    display: block;
+    padding-left: 5px;
+    padding-top: 20px;
+}
+
+.box-info input {
+    width: calc(100% - 15px);
+    height: 40px;
+    border: solid rgba(0, 0, 0, .2) 1px;
+    background-color: rgba(0, 0, 0, .2);
+    padding: 15px;
+    color: #fff;
+    border-radius: 6px;
+}
+
+.box-info input[type='checkbox'] {
+    position: relative;
+    top: 2px;
+    display: inline-block;
+    width: 20px;
+    height: 14px
+}
+
+.box-info .square-value {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+#box-help {
+    position: absolute;
+    bottom: 20px;
+    padding-right: 15px;
+    font-size: 14px;
+    line-height: 19px;
+}
+
+#blueprint-info {
+    position: absolute;
+    color: white;
+    pointer-events: none;
+    left: 50%;
+    transform: translateX(-80%);
+    text-align: center;
+    font-size: 35px;
+    padding: 20px 25px;
+    background-color: #111;
+    opacity: .15;
+    border-radius: 6px;
+    top: 50px;
+}
+
+.logo {
+    color: white;
+    padding: 16px;
+    font-weight: 300;
+    letter-spacing: 11px;
+    font-size: 15px;
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, .7); 
+}
+
+.right-buttons {
+	height: 50px;
+	float: left;
+	position: relative;
+    width: 400px;
+    text-align: right;
+}
+
+.left-buttons {
+	position: relative;
+	float: left;
+	width: calc(100% - 400px);
+}
+
+.btn-primary {
+	height: 50px;
+	background-color: #598053;
+	border: none;
+	color: #ddd;
+    padding: 0px 40px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #476843;
+}
+
+.btn-secondary {
+	height: 50px;
+	background-color: #49718B;
+	border: none;
+	color: #ddd;
+	padding: 0px 40px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: rgb(56, 88, 109);
+}
+
+select {
+    height: 50px;
+    border: none;
+    background-color: #606060;
+    color: #fff;
+    width: 180px;
+    margin: 0;
+    padding: 0;
+    padding-left: 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+select::-ms-expand {
+    display: none;
+}
