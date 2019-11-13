@@ -1,0 +1,3 @@
+include ritual/static/*
+include ritual/static/css/*
+include ritual/static/js/*
