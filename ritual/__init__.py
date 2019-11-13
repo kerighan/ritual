@@ -14,7 +14,7 @@ class Rite:
         self.name = name
 
     def add_box(self, box):
-        assert box.gist in ["Box", "Type", "Function", "Cast"]
+        assert box.gist in ["Box", "Function", "Cast", "Variable"]
         self.boxes.append(box)
 
     def __iadd__(self, boxes):
@@ -48,7 +48,7 @@ class Rite:
 
     def __getitem__(self, key):
         return self.name2box[key]
-    
+
     def promote(self, n, e):
         from .link import Link
         from copy import deepcopy

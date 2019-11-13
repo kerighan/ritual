@@ -2,6 +2,8 @@ def load_package(packages):
     from .box import Function, Condition, Variable
     import inspect
     import importlib
+    import sys
+    import os
 
     objs = []
     if packages:
@@ -9,6 +11,9 @@ def load_package(packages):
             Function.__class__,
             Condition.__class__,
             Variable.__class__)
+
+        current_path = os.path.realpath(os.path.dirname("."))
+        sys.path.insert(0, current_path)
 
         for package in packages:
             pkg = importlib.import_module(package)

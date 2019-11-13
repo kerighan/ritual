@@ -1,6 +1,7 @@
 from .box import Function, Output, Cast
 from .slot import StrSlot, DFSlot, BoolSlot, JsonSlot, ListSlot
 import pandas as pd
+import os
 
 
 class ReadDataFrame(Function):
@@ -11,6 +12,9 @@ class ReadDataFrame(Function):
     outputs = [
         DFSlot("df")
     ]
+    parameters = [
+        StrSlot("filename")
+    ]
     description = (
         "Read a DataFrame from disk: "
         "as pickle if filename extension is .p, "
@@ -20,6 +24,10 @@ class ReadDataFrame(Function):
 
     def call(self, inputs):
         filename = inputs[0]
+        if filename is None:
+            filename = self.parameters[0]
+        assert os.path.exists(filename)
+
         if ".p" == filename[-2:]:
             df = pd.read_pickle(filename)
         elif ".csv" == filename[-4:]:
@@ -27,7 +35,27 @@ class ReadDataFrame(Function):
         elif ".hdf" == filename[-4:]:
             key = filename.split("/")[-1].split(".")[0]
             df = pd.read_hdf(filename, key)
+        
         return df
+
+
+class Columns(Function):
+    name = "Get columns"
+    inputs = [
+        DFSlot("df")
+    ]
+    outputs = [
+        DFSlot("df[columns]")
+    ]
+    parameters = [
+        StrSlot("columns", "col1,col2")
+    ]
+
+    def call(self, inputs):
+        df = inputs[0]
+        columns = [
+            item.strip() for item in self.parameters[0].split(",")]
+        return df[columns]
 
 
 class DFToCSV(Output):

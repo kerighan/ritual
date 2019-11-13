@@ -534,6 +534,32 @@ class ToJson(Cast):
         return json.loads(str(inputs[0])),
 
 
+class ReadJson(Function):
+    name = "Read JSON"
+    inputs = [
+        StrSlot("filename")
+    ]
+    outputs = [
+        JsonSlot("Json")
+    ]
+    parameters = [
+        StrSlot("filename")
+    ]
+    description = (
+        "Create a JSON variable"
+    )
+
+    def call(self, inputs=None):
+        if inputs[0] is None:
+            filename = str(self.parameters[0])
+        else:
+            filename = inputs[0]
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+        return data
+
+
 standard = [
     Bool,
     Float,
@@ -542,6 +568,7 @@ standard = [
     Json,
     List,
     Environment,
+    ReadJson,
     ToInt,
     ToStr,
     ToJson,

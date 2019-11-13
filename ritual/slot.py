@@ -12,8 +12,10 @@ class Slot:
     gist = "Slot"
     color = "#96F632"
 
-    def __init__(self, name):
+    def __init__(self, name, value=None):
         self.name = name
+        if value is not None:
+            self.value = value
 
     def to_json(self):
         return {
