@@ -17,7 +17,7 @@ setuptools.setup(
     install_requires=["flask", "networkx", "pandas", "requests"],
     entry_points={
         "console_scripts": [
-            "ritual=ritual.__main__"
+            "ritual=ritual.__main__:main"
         ]
     },
     classifiers=[
