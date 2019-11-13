@@ -26,10 +26,24 @@ You can save the graph as well as running it by clicking on the top-right button
 
 You can add different pre-existing packages to the editor, as well as your own (documentation soon), by adding the `--packages` parameter:
 ```bash
-ritual --editor --packages ritual.requests ritual.dataframe
+ritual --editor --packages ritual.lib_requests ritual.lib_pandas
 ```
 These packages add a new set of boxes that you can place and call, in this case http requests and Pandas DataFrame basic I/O functions.
 
+When saved, the graph and the packages references are stored in a single .json file (in the graphs/ folder) that you can call later on by omitting the `--editor` parameter:
+
+```bash
+ritual -f graphs/XXXX.json
+```
+Or by loading directly the graph in Python:
+
+```python
+from ritual import load_graph
+
+ritual = load_graph("graphs/XXXX.json")
+state = ritual.run()
+```
+The `state` variable is a dict that contains the boxes output values, accessible by box name.
 
 ## Authors
 
