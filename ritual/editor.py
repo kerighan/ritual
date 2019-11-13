@@ -37,8 +37,8 @@ def start_server(args):
     import json
     import os
 
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    # log = logging.getLogger('werkzeug')
+    # log.setLevel(logging.ERROR)
 
     rite = Rite("project")
     rite += load_package(args.packages)
