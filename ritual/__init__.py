@@ -14,7 +14,7 @@ class Rite:
         self.name = name
 
     def add_box(self, box):
-        assert box.gist in ["Box", "Function", "Cast", "Variable"]
+        assert box.gist in ["Box", "Function", "Cast", "Variable", "InputOutput"]
         self.boxes.append(box)
 
     def __iadd__(self, boxes):
@@ -82,6 +82,7 @@ class Ritual():
     verbose = True
     id2name = {}
     name2node = {}
+    last_state = {}
 
     def create_graph(self, edges):
         if self.verbose:
@@ -115,7 +116,7 @@ class Ritual():
 
         self.sorted_nodes = list(nx.topological_sort(self.G))
     
-    def run(self, translate=True):
+    def run(self, translate=True, updated=None):
         assert self.sorted_nodes is not None
 
         if self.verbose:
@@ -123,34 +124,53 @@ class Ritual():
 
         # call functions
         state = {}
+        if updated is not None and len(self.last_state) != 0:
+            delete = False
+            for i, node in enumerate(self.sorted_nodes):
+                name = node.name
+                if name in updated and delete is False:
+                    delete = True
+                if delete and name in self.last_state:
+                    del self.last_state[name]
+                    print(name, "removed")
+                
+                if not delete and name in self.last_state:
+                    print(name, "kept")
+            print()
+
         for i, node in enumerate(self.sorted_nodes):
             # get node id
             node_id = node.get_id()
 
-            if len(node.inputs) == 0:
-                if len(node.outputs) > 0:
-                    state[node_id] = node._call()
-                else:
-                    node._call()
+            if node.name in self.last_state:
+                state[node_id] = self.last_state[node.name]
+                print("[!] " + node.name + " cached")
             else:
-                args = [None] * len(node.inputs)
-                for i in range(len(node.inputs)):
-                    if hasattr(node.inputs[i], "origin"):
-                        origin_id, pin = node.inputs[i].origin
-                        args[i] = state[origin_id][pin]
-
-                if len(node.outputs) > 0:
-                    state[node_id] = node._call(args)
+                if len(node.inputs) == 0:
+                    if len(node.outputs) > 0:
+                        state[node_id] = node._call()
+                    else:
+                        node._call()
                 else:
-                    node._call(args)
+                    args = [None] * len(node.inputs)
+                    for i in range(len(node.inputs)):
+                        if hasattr(node.inputs[i], "origin"):
+                            origin_id, pin = node.inputs[i].origin
+                            args[i] = state[origin_id][pin]
+
+                    if len(node.outputs) > 0:
+                        state[node_id] = node._call(args)
+                    else:
+                        node._call(args)
 
         if not translate:
             return state
-        
-        state_translated = {}
+
+        # state_translated = {}
         for key, value in state.items():
-            state_translated[self.id2name[key]] = value
-        return state_translated
+            # state_translated[self.id2name[key]] = value
+            self.last_state[self.id2name[key]] = value
+        return self.last_state
 
 
 def load_graph(filename):

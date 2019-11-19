@@ -1,10 +1,10 @@
-from .box import Function, Output, Cast
+from .box import Function, InputOutput, Cast
 from .slot import StrSlot, DFSlot, BoolSlot, JsonSlot, ListSlot
 import pandas as pd
 import os
 
 
-class ReadDataFrame(Function):
+class ReadDataFrame(InputOutput):
     name = "Read DataFrame"
     inputs = [
         StrSlot("filename")
@@ -58,7 +58,7 @@ class Columns(Function):
         return df[columns]
 
 
-class DFToCSV(Output):
+class DFToCSV(InputOutput):
     name = "Write DataFrame to CSV"
     inputs = [
         DFSlot("df")

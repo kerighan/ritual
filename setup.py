@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/kerighan/ritual",
     packages=setuptools.find_packages(),
     include_package_data=True,
-    install_requires=["flask", "networkx", "pandas", "requests"],
+    install_requires=["flask", "flask-socketio", "networkx", "pandas", "requests"],
     entry_points={
         "console_scripts": [
             "ritual=ritual.__main__:main"

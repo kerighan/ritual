@@ -39,6 +39,7 @@ var helperShown = false;
 var helperAllow = true;
 var draggingBox = false;
 var draggingLine = false;
+var writing = false;
 
 // selection
 var selectedNode = -1;
@@ -47,6 +48,7 @@ var selectedDir = -1;
 var hoveredNode = -1;
 var hoveredPin = -1;
 var hoveredDir = -1;
+var hoveredEdge = -1;
 var clickedNode = -1;
 var dragMouseX = -1;
 var dragMouseY = -1;
@@ -58,6 +60,7 @@ var dependentEdgesIndex = [];
 // store nodes and edges into memory
 var nodes = [];
 var edges = [];
+var updatedNodes = new Set();
 
 
 // box functions
@@ -327,27 +330,35 @@ function getBoxOfName(name){
 }
 
 function changeClickedBoxName(newName){
+    updatedNodes.add(nodes[clickedNode].name);
     nodes[clickedNode].group.select(".svg-box-name").text(newName);
     nodes[clickedNode].name = newName;
 }
 
 function changeClickedBoxValue(newValue){
     nodes[clickedNode].value = newValue;
+    updatedNodes.add(nodes[clickedNode].name);
 }
 
 function changeClickedBoxParam(newValue, index){
     nodes[clickedNode].parameters = JSON.parse(JSON.stringify(
         nodes[clickedNode].parameters));
     nodes[clickedNode].parameters[index].value = newValue;
+    updatedNodes.add(nodes[clickedNode].name);
 }
 
 // Helper events
 blueprint.addEventListener("contextmenu", function(e){
     e.preventDefault();
-    var x = e.clientX;
-    var y = e.clientY - 50;
 
-    helperOpen(x, y);
+    if (hoveredEdge == -1){
+        var x = e.clientX;
+        var y = e.clientY - 50;
+        helperOpen(x, y);
+    }
+    else {
+        removeEdge(hoveredEdge);
+    }
     return false;
 }, false);
 
@@ -522,17 +533,22 @@ function linkNodes(){
         var outputX = nodes[outputNodeIndex][outputDir][outputPin].x + nodes[outputNodeIndex].x
         var outputY = nodes[outputNodeIndex][outputDir][outputPin].y + nodes[outputNodeIndex].y;
 
+        // add inputnode to history
+        updatedNodes.add(nodes[inputNodeIndex].name);
+
+        var deltaX = Math.sqrt(Math.pow(inputX - outputX, 2) + Math.pow(inputY - outputY, 2)) + 1;
+        var elastic = deltaX / 3;
         var data = [
             {
                 x: inputX - 5,
                 y: inputY
             },
             {
-                x: inputX - 80,
+                x: inputX - elastic,
                 y: inputY
             },
             {
-                x: outputX + 80,
+                x: outputX + elastic,
                 y: outputY
             },
             {
@@ -544,7 +560,17 @@ function linkNodes(){
         var line = d3.line().x(function(d){ return d.x }).y(function(d){ return d.y}).curve(d3.curveBasis);
         var path = lines.append("path");
         var color = inputPin == 0 ? "rgba(255, 255, 255, .75)" : "#606060";
-        path.datum(data).attr("d", line).attr("fill", "transparent").attr("stroke", color).attr("stroke-width", 5);
+        path.datum(data).attr("class", "cursor-cut").attr("d", line).attr("fill", "transparent").attr("stroke", color).attr("stroke-width", 5).attr("index", edges.length);
+        path.on("mouseover", function(){ 
+            displayHelp.innerHTML = "Right-click to delete edge";
+            this.setAttribute("stroke-width", 7);
+            hoveredEdge = this.getAttribute("index");
+            console.log(hoveredEdge);
+        }).on("mouseout", function(){
+            displayHelp.innerHTML = "";
+            this.setAttribute("stroke-width", 5);
+            hoveredEdge = -1;
+        });
 
         edges.push(
             {
@@ -565,17 +591,20 @@ function linkNodes(){
 }
 
 function updateLinkNode(path, i, inputX, inputY, outputX, outputY){
+    var deltaX = Math.sqrt(Math.pow(inputX - outputX, 2) + Math.pow(inputY - outputY, 2)) + 1;
+    var elastic = deltaX / 3;
+
     var data = [
         {
             x: inputX - 5,
             y: inputY
         },
         {
-            x: inputX - 80,
+            x: inputX - elastic,
             y: inputY
         },
         {
-            x: outputX + 80,
+            x: outputX + elastic,
             y: outputY
         },
         {
@@ -622,6 +651,9 @@ function getDependentEdges(nodeIndex){
 
 // Line that draws on drag
 function dragLine(inputX, inputY, outputX, outputY){
+    var deltaX = Math.sqrt(Math.pow(inputX - outputX, 2) + Math.pow(inputY - outputY, 2)) + 1;
+    var elastic = deltaX / 3;
+
     draggableLine.html("");
     var data = [
         {
@@ -629,11 +661,11 @@ function dragLine(inputX, inputY, outputX, outputY){
             y: inputY
         },
         {
-            x: inputX + 80,
+            x: inputX + elastic,
             y: inputY
         },
         {
-            x: outputX - 80,
+            x: outputX - elastic,
             y: outputY
         },
         {
@@ -645,6 +677,16 @@ function dragLine(inputX, inputY, outputX, outputY){
 }
 
 // UI management
+function preventDeleteWhenWriting(element){
+    element.addEventListener("focus", function(){
+        writing = true;
+        console.log(writing);
+    });
+    element.addEventListener("blur", function(){
+        writing = false;
+    });
+}
+
 function displayBoxInfo(){
     displayGist.style.backgroundColor = "transparent";
     displayName.innerHTML = "";
@@ -668,6 +710,7 @@ function displayBoxInfo(){
         inputName.addEventListener("input", function(e){
             changeClickedBoxName(this.value);
         });
+        preventDeleteWhenWriting(inputName);
         displayName.appendChild(inputName);
 
         // add input value
@@ -676,8 +719,8 @@ function displayBoxInfo(){
             labelValue.innerHTML = "Value";
             displayValue.appendChild(labelValue);
 
-
             var inputValue = document.createElement("input");
+            preventDeleteWhenWriting(inputValue);
             if (box.primitive == "Bool"){
                 inputValue.setAttribute("type", "checkbox");
                 inputValue.checked = box.value;
@@ -711,6 +754,7 @@ function displayBoxInfo(){
                 displayParams.appendChild(labelParam);
 
                 var inputParam = document.createElement("input");
+                preventDeleteWhenWriting(inputParam);
                 inputParam.value = box.parameters[i].value;
                 inputParam.setAttribute("index", i);
                 inputParam.addEventListener("input", function(e){
@@ -725,12 +769,26 @@ function displayBoxInfo(){
 
 // Delete key presse
 document.addEventListener("keydown", function(e){
-    if (e.key == "Delete"){
+    if (e.key == "Delete" & !writing){
         if (clickedNode != -1){
             removeNode(clickedNode);
         }
     }
 });
+
+function removeEdge(edgeId){
+    // remove from history
+    var nodeName = nodes[edges[edgeId].inputNode.getAttribute("index")].name;
+    updatedNodes.add(nodeName);
+
+    edges[edgeId].path.remove();
+    edges.splice(edgeId, 1);
+    // reindex edges
+    for (var i = 0; i < edges.length; i++){
+        edges[i].path.attr("index", i);
+    }
+    hoveredEdge = -1;
+}
 
 function removeNode(nodeId){
     // remove dependant edges
@@ -822,18 +880,21 @@ function populateSaveList(){
 populateSaveList();
 
 
-function loadEdge(edge){
+function loadEdge(edge, i){
+    var deltaX = Math.sqrt(Math.pow(edge.inputX - edge.outputX, 2) + Math.pow(edge.inputY - edge.outputY, 2)) + 1;
+    var elastic = deltaX / 3;
+
     var data = [
         {
             x: edge.inputX - 5,
             y: edge.inputY
         },
         {
-            x: edge.inputX - 80,
+            x: edge.inputX - elastic,
             y: edge.inputY
         },
         {
-            x: edge.outputX + 80,
+            x: edge.outputX + elastic,
             y: edge.outputY
         },
         {
@@ -845,7 +906,17 @@ function loadEdge(edge){
     var line = d3.line().x(function(d){ return d.x }).y(function(d){ return d.y}).curve(d3.curveBasis);
     var path = lines.append("path");
     var color = edge.inputPin == 0 ? "rgba(255, 255, 255, .75)" : "#606060";
-    path.datum(data).attr("d", line).attr("fill", "transparent").attr("stroke", color).attr("stroke-width", 5);
+    path.datum(data).attr("class", "cursor-cut").attr("d", line).attr("fill", "transparent").attr("stroke", color).attr("stroke-width", 5).attr("index", i);
+    path.on("mouseover", function(){ 
+        displayHelp.innerHTML = "Right-click to delete edge";
+        this.setAttribute("stroke-width", 7);
+        hoveredEdge = this.getAttribute("index");
+        console.log(hoveredEdge);
+    }).on("mouseout", function(){
+        displayHelp.innerHTML = "";
+        this.setAttribute("stroke-width", 5);
+        hoveredEdge = -1;
+    });
 
     var inputNode = blueprint.querySelector("g[index='" + edge.inputNode + "']");
     var outputNode = blueprint.querySelector("g[index='" + edge.outputNode + "']");
@@ -875,12 +946,13 @@ function loadGraph(data){
     }
 
     for (var i = 0; i < loaded_edges.length; i++){
-        loadEdge(loaded_edges[i]);
+        loadEdge(loaded_edges[i], i);
     }
 
 }
 
 function resetGraph(){
+    updatedNodes = new Set();
     nodes = [];
     edges = [];
     nodeGroup.html("");
@@ -926,12 +998,15 @@ runButton.addEventListener("click", function(){
     // prepare Nodes data
     var new_nodes = prepareNodes();
 
+    var updatedNodesArray = Array.from(updatedNodes)
+    updatedNodes = new Set();
+
     // send request
     $.ajax({
         type: "POST",
         url: "/run",
         contentType:"application/json",
-        data: JSON.stringify({edges: new_edges, nodes: new_nodes}),
+        data: JSON.stringify({edges: new_edges, nodes: new_nodes, updated: updatedNodesArray}),
         success: function(data){
             console.log(data);
         }

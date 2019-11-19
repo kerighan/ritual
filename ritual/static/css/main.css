@@ -49,7 +49,7 @@ nav {
 .svg-container {
     position: absolute;
     left: 300px;
-    width: 100%;
+    width: 100vw;
 }
 
 .helper {
@@ -259,4 +259,8 @@ select {
 
 select::-ms-expand {
     display: none;
+}
+
+.cursor-cut {
+    cursor: vertical-text;
 }

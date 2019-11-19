@@ -22,8 +22,11 @@ def main():
 
     # instantiate Anubis
     if args.editor:
+        from flask_socketio import SocketIO
         app = start_server(args)
-        app.run(host="0.0.0.0", debug=True, port=args.p)
+        # app.run(host="0.0.0.0", debug=False, port=args.p)
+        socketio = SocketIO(app)
+        socketio.run(app, debug=True, port=args.p)
     else:
         from . import load_graph
 

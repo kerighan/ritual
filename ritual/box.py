@@ -75,6 +75,9 @@ class Box:
     
     def as_bool(self, value):
         return value in ["1", "true", "True", True, "yes", "Yes"]
+        
+    def as_list(self, value):
+        return [item.strip() for item in value.split(",")]
 
     def _from(self, i):
         return (self, i, self.outputs[i].value_type)
@@ -394,19 +397,17 @@ class GreaterThanOrEqual(Condition):
         return inputs[0] >= inputs[1]
 
 
-# Outputs
+# InputOutputs
 # ~~~~~~~
 
-class Output(Box):
-    name = "Output"
+class InputOutput(Box):
+    name = "InputOutput"
+    gist = "InputOutput"
     value_type = str
     color = "#BA9303"
-    inputs = [
-        StrSlot("text")
-    ]
 
 
-class Print(Output):
+class Print(InputOutput):
     import pandas as pd
 
     name = "Print"
@@ -429,7 +430,7 @@ class Print(Output):
                 print(str(inputs[0]))
 
 
-class ToFile(Output):
+class ToFile(InputOutput):
     name = "Write to file"
     value_type = (str, int, float, dict, list)
     inputs = [
@@ -534,7 +535,7 @@ class ToJson(Cast):
         return json.loads(str(inputs[0])),
 
 
-class ReadJson(Function):
+class ReadJson(InputOutput):
     name = "Read JSON"
     inputs = [
         StrSlot("filename")

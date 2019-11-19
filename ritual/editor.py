@@ -108,9 +108,11 @@ def start_server(args):
 
         nodes = request.json["nodes"]
         edges = request.json["edges"]
+        updated = request.json["updated"]
+        print(updated)
 
         ritual = rite.promote(nodes, edges)
-        res = ritual.run()
+        res = ritual.run(updated=updated)
 
         # show timing
         delta = time.time() - start_time
