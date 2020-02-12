@@ -482,11 +482,9 @@ helperInput.addEventListener("input", function(){
 
 helperInput.addEventListener("keydown", function(e){
     if (e.key == "Enter"){
-        if (helperList.children.length == 1){
-            helperList.children[0].click();
-        }
+        helperList.children[0].click();
     }
-})
+});
 
 // Position helper functions
 function posYOfPin(num_pins, i, start, end){

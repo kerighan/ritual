@@ -114,18 +114,18 @@ class Function(Box):
 class Add(Function):
     name = "+"
     inputs = [
-        FloatSlot("x"),
-        FloatSlot("y")
+        ObjectSlot("x"),
+        ObjectSlot("y")
     ]
     outputs = [
-        FloatSlot("x + y")
+        ObjectSlot("x + y")
     ]
     description = (
-        """Add two floats"""
+        """Add two objects"""
     )
 
     def call(self, inputs):
-        return inputs[0] + inputs[1],
+        return inputs[0] + inputs[1]
 
 
 class Substract(Function):
@@ -142,9 +142,27 @@ class Substract(Function):
     )
 
     def call(self, inputs):
-        return inputs[0] - inputs[1],
+        return inputs[0] - inputs[1]
 
 
+class Multiply(Function):
+    name = "*"
+    inputs = [
+        FloatSlot("x"),
+        FloatSlot("y")
+    ]
+    outputs = [
+        FloatSlot("x * y")
+    ]
+    description = (
+        """Multiply two floats"""
+    )
+
+    def call(self, inputs):
+        return inputs[0] * inputs[1]
+
+
+# Json
 class GetItem(Function):
     name = "Get item"
     inputs = [
@@ -182,7 +200,6 @@ class SetItem(Function):
     description = (
         """Store the value in the JSON at the `key` parameter."""
     )
-
 
     def call(self, inputs):
         inputs[0][self.parameters[0]] = inputs[1]
@@ -397,8 +414,59 @@ class GreaterThanOrEqual(Condition):
         return inputs[0] >= inputs[1]
 
 
+class LowerThan(Condition):
+    name = "<"
+    inputs = [
+        FloatSlot("x"),
+        FloatSlot("y")
+    ]
+    outputs = [
+        BoolSlot("x < y")
+    ]
+    description = (
+        "Returns True if the first input is strictly lower than the second input."
+    )
+
+    def call(self, inputs):
+        return inputs[0] < inputs[1]
+
+
+class LowerThanOrEqual(Condition):
+    name = "<="
+    inputs = [
+        FloatSlot("x"),
+        FloatSlot("y")
+    ]
+    outputs = [
+        BoolSlot("x <= y")
+    ]
+    description = (
+        "Returns True if the first input is lower than or equal to the second input."
+    )
+
+    def call(self, inputs):
+        return inputs[0] <= inputs[1]
+
+
+class Equal(Condition):
+    name = "="
+    inputs = [
+        FloatSlot("x"),
+        FloatSlot("y")
+    ]
+    outputs = [
+        BoolSlot("x == y")
+    ]
+    description = (
+        "Returns True if the first input is equal to the second input."
+    )
+
+    def call(self, inputs):
+        return inputs[0] == inputs[1]
+
+
 # InputOutputs
-# ~~~~~~~
+# ~~~~~~~~~~~~
 
 class InputOutput(Box):
     name = "InputOutput"
@@ -579,7 +647,11 @@ standard = [
     Branch,
     GreaterThan,
     GreaterThanOrEqual,
-    Print,
+    LowerThan,
+    LowerThanOrEqual,
+    Equal,
     Add,
     Substract,
+    Multiply,
+    Print,
 ]
