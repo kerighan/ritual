@@ -116,8 +116,11 @@ class Ritual():
 
         self.sorted_nodes = list(nx.topological_sort(self.G))
     
-    def run(self, translate=True, updated=None):
+    def run(self, translate=True, updated=None, cache=False):
         assert self.sorted_nodes is not None
+
+        if not cache:
+            self.last_state = {}
 
         if self.verbose:
             print("Running graph...")
@@ -166,9 +169,7 @@ class Ritual():
         if not translate:
             return state
 
-        # state_translated = {}
         for key, value in state.items():
-            # state_translated[self.id2name[key]] = value
             self.last_state[self.id2name[key]] = value
         return self.last_state
 

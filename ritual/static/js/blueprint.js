@@ -7,6 +7,7 @@ var nodeGroup = contentGroup.append("g").attr("id", "nodes");
 var lines = contentGroup.append("g").attr("id", "lines");
 var draggableLine = contentGroup.append("g").attr("id", "draggable-line").attr("pointer-events", "none");
 var line = d3.line().x(function(d){ return d.x }).y(function(d){ return d.y}).curve(d3.curveBasis);
+var graphName;
 
 var panX = 0;
 var panY = 0;
@@ -26,6 +27,7 @@ var displayParams = document.getElementById("box-info-parameters");
 var displayValue = document.getElementById("box-info-value");
 var displayHelp = document.getElementById("box-help");
 var runButton = document.getElementById("run-button");
+var cacheBox = document.getElementById("cache-box");
 var saveButton = document.getElementById("save-button");
 var saveList = document.getElementById("save-list");
 
@@ -991,6 +993,12 @@ function prepareNodes(){
     return new_nodes;
 }
 
+
+cacheBox.addEventListener("change", function(){
+    console.log(cacheBox.checked);
+});
+
+
 runButton.addEventListener("click", function(){
     // prepare Edges data
     var new_edges = prepareEdges();
@@ -1006,7 +1014,7 @@ runButton.addEventListener("click", function(){
         type: "POST",
         url: "/run",
         contentType:"application/json",
-        data: JSON.stringify({edges: new_edges, nodes: new_nodes, updated: updatedNodesArray}),
+        data: JSON.stringify({edges: new_edges, nodes: new_nodes, updated: updatedNodesArray, cache: cacheBox.checked}),
         success: function(data){
             console.log(data);
         }
@@ -1020,14 +1028,18 @@ saveButton.addEventListener("click", function(){
     // prepare Nodes data
     var new_nodes = prepareNodes();
 
-    // send request
-    $.ajax({
-        type: "POST",
-        url: "/save",
-        contentType:"application/json",
-        data: JSON.stringify({edges: new_edges, nodes: new_nodes}),
-        success: function(data){
-            populateSaveList();
-        }
-    });
+    graphName = prompt("Please enter the graph name:", graphName? graphName : "my_graph");
+
+    if (graphName){
+        // send request
+        $.ajax({
+            type: "POST",
+            url: "/save",
+            contentType:"application/json",
+            data: JSON.stringify({edges: new_edges, nodes: new_nodes, name: graphName}),
+            success: function(data){
+                populateSaveList();
+            }
+        });
+    }
 });

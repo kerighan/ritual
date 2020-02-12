@@ -58,8 +58,8 @@ class Columns(Function):
         return df[columns]
 
 
-class DFToCSV(InputOutput):
-    name = "Write DataFrame to CSV"
+class DFToFile(InputOutput):
+    name = "Write DataFrame to file"
     inputs = [
         DFSlot("df")
     ]
@@ -70,8 +70,15 @@ class DFToCSV(InputOutput):
 
     def call(self, inputs):
         df = inputs[0]
-        df.to_csv(self.parameters[0],
-                  index=None)
+        filename = self.parameters[0]
+        if filename[-2:] == ".p":
+            df.to_pickle(filename)
+        elif filename[-4:] == ".csv":
+            df.to_csv(self.parameters[0],
+                index=None)
+        elif filename[-4:] == ".hdf":
+            name = filename.split("/")[-1].split(".")[0]
+            df.to_hdf(filename, name)
 
 
 class DFToJSON(Cast):

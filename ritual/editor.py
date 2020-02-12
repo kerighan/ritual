@@ -82,12 +82,12 @@ def start_server(args):
 
         nodes = request.json["nodes"]
         edges = request.json["edges"]
+        name = request.json["name"]
 
         if not os.path.exists("graphs"):
             os.makedirs("graphs")
-        
-        filename = datetime.now().strftime("%Y%m%d_%H%M%S") + ".json"
-        filename = os.path.join("graphs/", filename)
+
+        filename = os.path.join("graphs/", name + ".json")
         with open(filename, "w") as f:
             json.dump({
                 "nodes": nodes,
@@ -109,10 +109,10 @@ def start_server(args):
         nodes = request.json["nodes"]
         edges = request.json["edges"]
         updated = request.json["updated"]
-        print(updated)
+        cache = request.json["cache"]
 
         ritual = rite.promote(nodes, edges)
-        res = ritual.run(updated=updated)
+        res = ritual.run(updated=updated, cache=cache)
 
         # show timing
         delta = time.time() - start_time
